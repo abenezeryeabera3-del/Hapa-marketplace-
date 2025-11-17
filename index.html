@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAPA Marketplace - Buy & Sell Locally</title>
+    <style>
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            font-family: 'Arial', sans-serif; 
+        }
+        
+        body { 
+            background: #f8f9fa; 
+            color: #333; 
+            line-height: 1.6;
+        }
+        
+        /* Login Modal */
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+        
+        .login-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .login-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .login-tab {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .login-tab.active {
+            border-bottom-color: #3498db;
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .login-form {
+            display: none;
+        }
+        
+        .login-form.active {
+            display: block;
+        }
+        
+        /* Header */
+        .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            padding: 1rem; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo { 
+            font-size: 1.8rem; 
+            font-weight: bold; 
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .user-info {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+        
+        .nav { 
+            display: flex; 
+            gap: 8px; 
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .nav button { 
+            padding: 10px 15px; 
+            background: rgba(255,255,255,0.2); 
+            color: white; 
+            border: 1px solid white;
+            border-radius: 8px; 
+            font-size: 0.9rem;
+        }
+        
+        /* Shop Link */
+        .shop-link {
+            background: #3498db;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin: 5px 0;
+        }
+        
+        .copy-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+        
+        /* Category Filter */
+        .category-filter {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+            margin-bottom: 15px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .category-btn {
+            padding: 10px 15px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+        
+        .category-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        /* Product Cards */
+        .product-card { 
+            background: white; 
+            padding: 15px; 
+            margin: 10px 0; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .product-card:active {
+            transform: scale(0.98);
+        }
+        
+        .product-image { 
+            width: 100%; 
+            height: 150px; 
+            background: linear-gradient(45deg, #ecf0f1, #bdc3c7);
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 2.5rem; 
+            margin-bottom: 12px;
+            border-radius: 8px;
+        }
+        
+        .product-category {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e3f2fd;
+            color: #1976d2;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+        
+        .product-price { 
+            font-size: 1.4rem; 
+            font-weight: bold; 
+            color: #e74c3c; 
+            margin: 5px 0;
+        }
+        
+        .product-location { 
+            color: #7f8c8d; 
+            font-size: 0.9rem;
+            margin: 5px 0;
+        }
+        
+        .seller-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .seller-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+        }
+        
+        /* Shop Page */
+        .shop-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .shop-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            opacity: 0.3;
+        }
+        
+        .shop-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .shop-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .shop-stat {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .shop-stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        /* Forms */
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 15px 0;
+        }
+        
+        .form-group { 
+            margin-bottom: 15px; 
+        }
+        
+        .form-group label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        /* Buttons */
+        .btn { 
+            padding: 14px 20px; 
+            background: #27ae60; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            width: 100%; 
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* Chat */
+        .chat-messages { 
+            height: 300px; 
+            border: 1px solid #ddd; 
+            padding: 15px; 
+            margin: 15px 0; 
+            overflow-y: auto; 
+            background: #fafafa;
+            border-radius: 8px;
+        }
+        
+        .message { 
+            padding: 12px 16px; 
+            margin: 8px 0; 
+            border-radius: 18px; 
+            max-width: 85%; 
+            word-wrap: break-word;
+        }
+        
+        .message.sent { 
+            background: #3498db; 
+            color: white; 
+            margin-left: auto; 
+        }
+        
+        .message.received { 
+            background: white; 
+            border: 1px solid #ddd;
+        }
+        
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+        }
+        
+        .chat-input button {
+            padding: 12px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 24px;
+        }
+        
+        /* Support */
+        .support-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .support-method {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .hidden { 
+            display: none; 
+        }
+        
+        /* Admin Panel */
+        .admin-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .admin-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .admin-table th, .admin-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .admin-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .ban-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        /* Profile */
+        .profile-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .profile-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .profile-pic img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .store-background {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .store-background img {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+        
+        /* Alcohol Warning */
+        .alcohol-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+            color: #856404;
+        }
+        
+        .age-restriction {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+            font-weight: bold;
+        }
+        
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="login-modal" class="login-modal">
+        <div class="login-content">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🛍️</div>
+            <h2>Welcome to HAPA Marketplace</h2>
+            <p style="margin-bottom: 2rem; color: #666;">You must create an account to buy and sell</p>
+            
+            <div class="login-tabs">
+                <button class="login-tab active" onclick="showLoginForm('login')">Login</button>
+                <button class="login-tab" onclick="showLoginForm('register')">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="login-form" class="login-form active" onsubmit="loginUser(event)">
+                <div class="form-group">
+                    <input type="email" placeholder="Email Address" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" placeholder="Password" id="login-password" required>
+                </div>
+                <button type="submit" class="btn">Login to HAPA</button>
+            </form>
+            
+            <!-- Register Form -->
+            <form id="register-form" class="login-form" onsubmit="registerUser(event)">
+                <div class="form-group">
+                    <input type="text" placeholder="Full Name" id="register-name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" placeholder="Email Address" id="register-email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" placeholder="Password (min 6 characters)" id="register-password" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <input type="text" placeholder="City, Country" id="register-location" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" placeholder="Shop Username (for your shop link)" id="register-shopname" required>
+                </div>
+                <div class="form-group">
+                    <label style="text-align: left; display: block;">
+                        <input type="checkbox" id="register-terms" required>
+                        I agree to HAPA's Terms of Service and Privacy Policy
+                    </label>
+                </div>
+                <button type="submit" class="btn">Create HAPA Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App (Hidden until logged in) -->
+    <div id="main-app" class="hidden">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🛍️ HAPA Marketplace</div>
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <span id="user-name">Welcome!</span>
+                <button onclick="logout()" style="background: none; border: 1px solid white; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">
+                    Logout
+                </button>
+            </div>
+            <div class="nav">
+                <button onclick="showSection('home')">🏠 Home</button>
+                <button onclick="showSection('sell')">💰 Sell</button>
+                <button onclick="showSection('profile')">👤 Profile</button>
+                <button onclick="showSection('chat')">💬 Chat</button>
+                <button onclick="showSection('support')">🆘 Support</button>
+                <button onclick="showSection('admin')" style="background: #e74c3c;">🔧 Admin</button>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Home Section -->
+            <div id="home" class="section active">
+                <h2>Products Near You</h2>
+                
+                <!-- Category Filter -->
+                <div class="category-filter" id="category-filter">
+                    <!-- Categories will be loaded here -->
+                </div>
+                
+                <div id="products-container">
+                    <!-- Products will load here -->
+                </div>
+            </div>
+
+            <!-- Sell Section -->
+            <div id="sell" class="section hidden">
+                <div class="form-container">
+                    <h2>🛒 Sell on HAPA</h2>
+                    <p style="color: #666; margin-bottom: 15px;">Your shop: <strong id="user-shop-link">Loading...</strong></p>
+                    
+                    <form onsubmit="listItem(event)">
+                        <div class="form-group">
+                            <input type="text" placeholder="Item Title" id="itemTitle" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="number" placeholder="Price ($)" id="itemPrice" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <textarea placeholder="Description" id="itemDescription" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <select id="itemCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="electronics">📱 Electronics</option>
+                                <option value="clothing">👕 Clothing & Fashion</option>
+                                <option value="furniture">🛋️ Furniture & Home</option>
+                                <option value="cars">🚗 Vehicles</option>
+                                <option value="alcohol">🍷 Alcohol & Bottle Store</option>
+                                <option value="realestate">🏠 Real Estate</option>
+                                <option value="jobs">💼 Jobs & Services</option>
+                                <option value="sports">⚽ Sports & Fitness</option>
+                                <option value="beauty">💄 Beauty & Health</option>
+                                <option value="books">📚 Books & Education</option>
+                                <option value="pets">🐾 Pets & Animals</option>
+                                <option value="other">📦 Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="text" placeholder="Location (City, Country)" id="itemLocation" required>
+                        </div>
+                        
+                        <div id="alcohol-warning" class="alcohol-warning hidden">
+                            🚨 <strong>Age Restriction:</strong> You must be 21+ to sell alcohol. By listing this item, you confirm you meet legal age requirements.
+                        </div>
+                        
+                        <button type="submit" class="btn">List Item on HAPA</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile" class="section hidden">
+                <div class="profile-section">
+                    <div class="profile-header">
+                        <div class="profile-pic" id="profile-pic-display">👤</div>
+                        <h2 id="profile-name-display">Your HAPA Profile</h2>
+                        <p>Manage your account and store settings</p>
+                        
+                        <!-- Shop Link -->
+                        <div style="margin: 15px 0;">
+                            <div class="shop-link" id="profile-shop-link">
+                                <span>🔗 Your Shop: hapa.com/shop/</span>
+                                <button class="copy-btn" onclick="copyShopLink()">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form onsubmit="updateProfile(event)">
+                        <div class="form-group">
+                            <label>Display Name</label>
+                            <input type="text" id="profileName" placeholder="Your display name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="profileEmail" placeholder="your@email.com" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" id="profileLocation" placeholder="City, Country" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Shop Username (for your shop link)</label>
+                            <input type="text" id="profileShopname" placeholder="your-shop-name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Profile Picture URL</label>
+                            <input type="text" id="profilePic" placeholder="https://example.com/photo.jpg">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Store Background URL</label>
+                            <input type="text" id="storeBackground" placeholder="https://example.com/background.jpg">
+                        </div>
+                        
+                        <button type="submit" class="btn">Update Profile</button>
+                    </form>
+                    
+                    <div style="margin-top: 20px;">
+                        <h3>Your Shop Stats</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number" id="user-products-count">0</div>
+                                <div>Products Listed</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="user-views-count">0</div>
+                                <div>Shop Views</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <h3>Your Listed Items</h3>
+                        <div id="user-products">
+                            <!-- User's products will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Section -->
+            <div id="chat" class="section hidden">
+                <div class="form-container">
+                    <h2>💬 HAPA Chat</h2>
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message received">
+                            <strong>HAPA Support:</strong> Hello! Welcome to HAPA Marketplace chat. How can we help you today?
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" placeholder="Type your message..." id="chat-input">
+                        <button onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Section -->
+            <div id="support" class="section hidden">
+                <div class="form-container">
+                    <h2>🆘 HAPA Support</h2>
+                    <div class="support-methods">
+                        <div class="support-method">
+                            <h3>📞 Call Us</h3>
+                            <p id="support-phone">1-800-HAPA-123</p>
+                        </div>
+                        <div class="support-method">
+                            <h3>📧 Email</h3>
+                            <p id="support-email">support@hapa.com</p>
+                        </div>
+                    </div>
+                    
+                    <form onsubmit="submitSupport(event)">
+                        <div class="form-group">
+                            <input type="text" placeholder="Your Name" id="supportName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="email" placeholder="Email Address" id="supportEmail" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <select id="supportCategory" required>
+                                <option value="">Select Issue Type</option>
+                                <option value="account">👤 Account Issues</option>
+                                <option value="payment">💳 Payment Problems</option>
+                                <option value="product">📦 Product Listing</option>
+                                <option value="delivery">🚚 Delivery Issues</option>
+                                <option value="safety">🛡️ Safety Concern</option>
+                                <option value="scam">🚨 Report Scammer</option>
+                                <option value="technical">🔧 Technical Problem</option>
+                                <option value="other">❓ Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="text" placeholder="Subject" id="supportSubject" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <textarea placeholder="Describe your issue in detail..." id="supportMessage" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn">Submit to HAPA Support</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Admin Section -->
+            <div id="admin" class="section hidden">
+                <div class="admin-panel">
+                    <h2>🔧 HAPA Admin Panel</h2>
+                    
+                    <div style="text-align: center; margin: 20px 0;">
+                        <input type="password" id="admin-password" placeholder="Enter Admin Password" style="padding: 10px; margin: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                        <button onclick="loginAdmin()" style="background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 5px;">Login as Admin</button>
+                    </div>
+                    
+                    <div id="admin-content" class="hidden">
+                        <!-- Support Settings -->
+                        <div class="admin-section">
+                            <h3>📞 Support Contact Settings</h3>
+                            <form onsubmit="updateSupportSettings(event)">
+                                <div class="form-group">
+                                    <label>Support Phone Number</label>
+                                    <input type="text" id="admin-support-phone" placeholder="1-800-HAPA-123" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Support Email</label>
+                                    <input type="email" id="admin-support-email" placeholder="support@hapa.com" required>
+                                </div>
+                                <button type="submit" class="btn-primary">Update Support Info</button>
+                            </form>
+                        </div>
+
+                        <!-- User Management -->
+                        <div class="admin-section">
+                            <h3>👥 User Management</h3>
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Shop Link</th>
+                                        <th>Products</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table">
+                                    <!-- Users will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Ban Management -->
+                        <div class="admin-section">
+                            <h3>🚨 Ban Management</h3>
+                            <form onsubmit="banUser(event)" style="margin-bottom: 20px;">
+                                <div class="form-group">
+                                    <label>Ban User by Email</label>
+                                    <input type="email" id="ban-email" placeholder="user@example.com" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Reason for Ban</label>
+                                    <select id="ban-reason" required>
+                                        <option value="scam">Scam/Fraud</option>
+                                        <option value="spam">Spam</option>
+                                        <option value="harassment">Harassment</option>
+                                        <option value="fake_items">Fake Items</option>
+                                        <option value="underage_alcohol">Underage Alcohol Sales</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="ban-btn">Ban User</button>
+                            </form>
+
+                            <h4>Banned Users</h4>
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Email</th>
+                                        <th>Reason</th>
+                                        <th>Date Banned</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="banned-users-table">
+                                    <!-- Banned users will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        let products = JSON.parse(localStorage.getItem('hapa_products')) || [];
+        let messages = JSON.parse(localStorage.getItem('hapa_messages')) || [];
+        let tickets = JSON.parse(localStorage.getItem('hapa_tickets')) || [];
+        let users = JSON.parse(localStorage.getItem('hapa_users')) || [];
+        let bannedUsers = JSON.parse(localStorage.getItem('hapa_banned')) || [];
+        let adminSettings = JSON.parse(localStorage.getItem('hapa_admin')) || {
+            supportPhone: "1-800-HAPA-123",
+            supportEmail: "support@hapa.com",
+            adminPassword: "admin123"
+        };
+
+        let currentCategory = 'all';
+        let currentUser = null;
+        let isAdmin = false;
+
+        // Categories Data
+        const categories = [
+            { id: 'all', name: 'All Categories', icon: '📦' },
+            { id: 'electronics', name: 'Electronics', icon: '📱' },
+            { id: 'clothing', name: 'Clothing', icon: '👕' },
+            { id: 'furniture', name: 'Furniture', icon: '🛋️' },
+            { id: 'cars', name: 'Vehicles', icon: '🚗' },
+            { id: 'alcohol', name: 'Alcohol', icon: '🍷' },
+            { id: 'realestate', name: 'Real Estate', icon: '🏠' },
+            { id: 'jobs', name: 'Jobs', icon: '💼' },
+            { id: 'sports', name: 'Sports', icon: '⚽' },
+            { id: 'beauty', name: 'Beauty', icon: '💄' },
+            { id: 'books', name: 'Books', icon: '📚' },
+            { id: 'pets', name: 'Pets', icon: '🐾' }
+        ];
+
+        // Category Icons
+        const categoryIcons = {
+            electronics: '📱',
+            clothing: '👕',
+            furniture: '🛋️',
+            cars: '🚗',
+            alcohol: '🍷',
+            realestate: '🏠',
+            jobs: '💼',
+            sports: '⚽',
+            beauty: '💄',
+            books: '📚',
+            pets: '🐾',
+            other: '📦'
+        };
+
+        // Initialize Data
+        function initData() {
+            if (products.length === 0) {
+                products = [
+                    { 
+                        id: 1, 
+                        title: "iPhone 13 Pro", 
+                        price: 899, 
+                        desc: "Like new, 256GB, unlocked with warranty", 
+                        category: "electronics", 
+                        location: "New York, USA",
+                        sellerId: "demo1",
+                        sellerName: "TechGadgets",
+                        date: new Date().toISOString(),
+                        reports: 0,
+                        views: 42
+                    },
+                    { 
+                        id: 2, 
+                        title: "Designer Leather Jacket", 
+                        price: 85, 
+                        desc: "Genuine leather, size M, perfect condition", 
+                        category: "clothing", 
+                        location: "London, UK",
+                        sellerId: "demo2", 
+                        sellerName: "FashionStore",
+                        date: new Date().toISOString(),
+                        reports: 0,
+                        views: 28
+                    },
+                    { 
+                        id: 3, 
+                        title: "Premium Whiskey Collection", 
+                        price: 150, 
+                        desc: "Rare whiskey bottles, aged 12 years", 
+                        category: "alcohol", 
+                        location: "Tokyo, Japan",
+                        sellerId: "demo3",
+                        sellerName: "LiquorShop",
+                        date: new Date().toISOString(),
+                        reports: 0,
+                        views: 15
+                    }
+                ];
+                localStorage.setItem('hapa_products', JSON.stringify(products));
+            }
+
+            if (messages.length === 0) {
+                messages = [
+                    { 
+                        type: 'received', 
+                        text: 'Hello! Welcome to HAPA Marketplace chat. How can we help you today?', 
+                        time: new Date().toISOString() 
+                    }
+                ];
+                localStorage.setItem('hapa_messages', JSON.stringify(messages));
+            }
+
+            // Initialize admin settings
+            localStorage.setItem('hapa_admin', JSON.stringify(adminSettings));
+            
+            // Update support info display
+            document.getElementById('support-phone').textContent = adminSettings.supportPhone;
+            document.getElementById('support-email').textContent = adminSettings.supportEmail;
+            
+            // Check if user is already logged in
+            const savedUser = localStorage.getItem('hapa_current_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showMainApp();
+            }
+        }
+
+        // Login/Register Functions
+        function showLoginForm(formType) {
+            document.querySelectorAll('.login-form').forEach(form => form.classList.remove('active'));
+            document.querySelectorAll('.login-tab').forEach(tab => tab.classList.remove('active'));
+            
+            document.getElementById(formType + '-form').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function registerUser(event) {
+            event.preventDefault();
+            
+            const user = {
+                id: 'user_' + Date.now(),
+                name: document.getElementById('register-name').value,
+                email: document.getElementById('register-email').value,
+                password: document.getElementById('register-password').value,
+                location: document.getElementById('register-location').value,
+                shopname: document.getElementById('register-shopname').value.toLowerCase().replace(/\s+/g, '-'),
+                profilePic: '',
+                storeBackground: '',
+                joined: new Date().toISOString(),
+                products: 0,
+                views: 0
+            };
+            
+            // Check if email already exists
+            const existingUser = users.find(u => u.email === user.email);
+            if (existingUser) {
+                alert('Email already registered! Please login instead.');
+                return;
+            }
+            
+            // Check if shopname already exists
+            const existingShop = users.find(u => u.shopname === user.shopname);
+            if (existingShop) {
+                alert('Shop username already taken! Please choose another.');
+                return;
+            }
+            
+            users.push(user);
+            localStorage.setItem('hapa_users', JSON.stringify(users));
+            
+            currentUser = user;
+            localStorage.setItem('hapa_current_user', JSON.stringify(currentUser));
+            
+            showMainApp();
+            alert('🎉 Welcome to HAPA Marketplace! Your account has been created.');
+        }
+
+        function loginUser(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('hapa_current_user', JSON.stringify(currentUser));
+                showMainApp();
+            } else {
+                alert('Invalid email or password!');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('hapa_current_user');
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('login-modal').classList.remove('hidden');
+        }
+
+        function showMainApp() {
+            document.getElementById('login-modal').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            updateUserDisplay();
+            loadCategories();
+            loadProducts();
+        }
+
+        function updateUserDisplay() {
+            if (!currentUser) return;
+            
+            document.getElementById('user-name').textContent = currentUser.name;
+            document.getElementById('user-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+            document.getElementById('profile-name-display').textContent = currentUser.name + "'s Profile";
+            document.getElementById('user-shop-link').textContent = `hapa.com/shop/${currentUser.shopname}`;
+            document.getElementById('profile-shop-link').innerHTML = `
+                <span>🔗 Your Shop: hapa.com/shop/${currentUser.shopname}</span>
+                <button class="copy-btn" onclick="copyShopLink()">Copy</button>
+            `;
+            
+            // Update profile form
+            document.getElementById('profileName').value = currentUser.name;
+            document.getElementById('profileEmail').value = currentUser.email;
+            document.getElementById('profileLocation').value = currentUser.location;
+            document.getElementById('profileShopname').value = currentUser.shopname;
+            document.getElementById('profilePic').value = currentUser.profilePic || '';
+            document.getElementById('storeBackground').value = currentUser.storeBackground || '';
+            
+            // Update stats
+            const userProducts = products.filter(p => p.sellerId === currentUser.id);
+            document.getElementById('user-products-count').textContent = userProducts.length;
+            document.getElementById('user-views-count').textContent = userProducts.reduce((sum, p) => sum + (p.views || 0), 0);
+        }
+
+        function copyShopLink() {
+            const shopLink = `hapa.com/shop/${currentUser.shopname}`;
+            navigator.clipboard.writeText(shopLink);
+            alert('✅ Shop link copied to clipboard! Share it with your customers.');
+        }
+
+        // Navigation
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(section).classList.remove('hidden');
+            
+            if (section === 'home') {
+                loadCategories();
+                loadProducts();
+            }
+            if (section === 'chat') {
+                loadMessages();
+            }
+            if (section === 'profile') {
+                loadUserProducts();
+            }
+            if (section === 'admin') {
+                document.getElementById('admin-content').classList.add('hidden');
+            }
+        }
+
+        // Category Functions
+        function loadCategories() {
+            const filter = document.getElementById('category-filter');
+            filter.innerHTML = categories.map(cat => `
+                <button class="category-btn ${currentCategory === cat.id ? 'active' : ''}" 
+                        onclick="filterByCategory('${cat.id}')">
+                    ${cat.icon} ${cat.name}
+                </button>
+            `).join('');
+        }
+
+        function filterByCategory(category) {
+            currentCategory = category;
+            loadCategories();
+            loadProducts();
+        }
+
+        // Product Functions
+        function loadProducts() {
+            const container = document.getElementById('products-container');
+            let filteredProducts = products;
+            
+            if (currentCategory !== 'all') {
+                filteredProducts = products.filter(product => product.category === currentCategory);
+            }
+            
+            if (filteredProducts.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <h3>No products found</h3>
+                        <p>No items in ${categories.find(c => c.id === currentCategory)?.name} category yet.</p>
+                        <button onclick="showSection('sell')" style="padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; margin-top: 10px;">
+                            Be the first to list!
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = filteredProducts.map(product => `
+                <div class="product-card">
+                    <div class="product-image">
+                        ${categoryIcons[product.category] || '📦'}
+                        ${product.category === 'alcohol' ? '<span class="age-restriction">21+</span>' : ''}
+                    </div>
+                    
+                    <div class="product-category">
+                        ${categories.find(c => c.id === product.category)?.name || 'Other'}
+                    </div>
+                    
+                    <h3>${product.title}</h3>
+                    <div class="product-price">$${product.price}</div>
+                    <div class="product-location">📍 ${product.location}</div>
+                    <p>${product.desc}</p>
+                    
+                    <div class="seller-info">
+                        <div class="seller-avatar">${product.sellerName?.charAt(0) || 'S'}</div>
+                        <div>
+                            <strong>${product.sellerName}</strong>
+                            <div class="shop-link" style="font-size: 0.7rem; padding: 4px 8px;">
+                                🔗 hapa.com/shop/${users.find(u => u.id === product.sellerId)?.shopname || 'shop'}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="contactSeller(${product.id})" 
+                            style="padding: 12px; background: #3498db; color: white; border: none; border-radius: 8px; width: 100%; margin-top: 10px;">
+                        💬 Contact Seller
+                    </button>
+                    
+                    <button onclick="reportItem(${product.id})" class="report-btn">
+                        🚨 Report Item
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function listItem(event) {
+            event.preventDefault();
+            
+            if (!currentUser) {
+                alert('Please login first!');
+                return;
+            }
+            
+            const category = document.getElementById('itemCategory').value;
+            
+            // Show alcohol warning if applicable
+            const alcoholWarning = document.getElementById('alcohol-warning');
+            if (category === 'alcohol') {
+                alcoholWarning.classList.remove('hidden');
+                if (!confirm("🚨 AGE VERIFICATION REQUIRED\n\nBy listing alcohol products, you confirm that:\n• You are 21+ years old\n• You will verify buyer's age at sale\n• You comply with local alcohol laws\n\nDo you confirm all of the above?")) {
+                    return;
+                }
+            } else {
+                alcoholWarning.classList.add('hidden');
+            }
+            
+            const newProduct = {
+                id: products.length + 1,
+                title: document.getElementById('itemTitle').value,
+                price: parseFloat(document.getElementById('itemPrice').value),
+                desc: document.getElementById('itemDescription').value,
+                category: category,
+                location: document.getElementById('itemLocation').value,
+                sellerId: currentUser.id,
+                sellerName: currentUser.name,
+                sellerShop: currentUser.shopname,
+                date: new Date().toISOString(),
+                reports: 0,
+                views: 0
+            };
+            
+            products.push(newProduct);
+            localStorage.setItem('hapa_products', JSON.stringify(products));
+            
+            // Update user's product count
+            currentUser.products = products.filter(p => p.sellerId === currentUser.id).length;
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex] = currentUser;
+                localStorage.setItem('hapa_users', JSON.stringify(users));
+                localStorage.setItem('hapa_current_user', JSON.stringify(currentUser));
+            }
+            
+            // Reset form
+            event.target.reset();
+            alcoholWarning.classList.add('hidden');
+            
+            alert('✅ Item listed successfully on HAPA Marketplace!');
+            showSection('home');
+        }
+
+        function contactSeller(id) {
+            const product = products.find(p => p.id === id);
+            if (product) {
+                alert(`Contact seller about: ${product.title}\n\n👤 Seller: ${product.sellerName}\n🏪 Shop: hapa.com/shop/${product.sellerShop}\n📍 Location: ${product.location}\n\n💡 Tip: Use HAPA Chat for secure messaging!`);
+                
+                // Increment views
+                product.views = (product.views || 0) + 1;
+                localStorage.setItem('hapa_products', JSON.stringify(products));
+            }
+        }
+
+        function reportItem(id) {
+            const product = products.find(p => p.id === id);
+            if (product) {
+                product.reports = (product.reports || 0) + 1;
+                localStorage.setItem('hapa_products', JSON.stringify(products));
+                alert('🚨 Item reported to HAPA moderators. Thank you for keeping our community safe!');
+            }
+        }
+
+        // Profile Functions
+        function updateProfile(event) {
+            event.preventDefault();
+            
+            if (!currentUser) return;
+            
+            currentUser.name = document.getElementById('profileName').value;
+            currentUser.email = document.getElementById('profileEmail').value;
+            currentUser.location = document.getElementById('profileLocation').value;
+            currentUser.shopname = document.getElementById('profileShopname').value.toLowerCase().replace(/\s+/g, '-');
+            currentUser.profilePic = document.getElementById('profilePic').value;
+            currentUser.storeBackground = document.getElementById('storeBackground').value;
+            
+            // Update user in users array
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex] = currentUser;
+                localStorage.setItem('hapa_users', JSON.stringify(users));
+            }
+            
+            localStorage.setItem('hapa_current_user', JSON.stringify(currentUser));
+            
+            // Update all products by this user
+            products.forEach(product => {
+                if (product.sellerId === currentUser.id) {
+                    product.sellerName = currentUser.name;
+                    product.sellerShop = currentUser.shopname;
+                }
+            });
+            localStorage.setItem('hapa_products', JSON.stringify(products));
+            
+            updateUserDisplay();
+            alert('✅ Profile updated successfully!');
+        }
+
+        function loadUserProducts() {
+            if (!currentUser) return;
+            
+            const userProducts = products.filter(p => p.sellerId === currentUser.id);
+            const container = document.getElementById('user-products');
+            
+            if (userProducts.length === 0) {
+                container.innerHTML = '<p>You haven\'t listed any items yet. <button onclick="showSection(\'sell\')" style="color: #3498db; background: none; border: none; text-decoration: underline; cursor: pointer;">List your first item!</button></p>';
+                return;
+            }
+            
+            container.innerHTML = userProducts.map(product => `
+                <div class="product-card">
+                    <h3>${product.title}</h3>
+                    <div class="product-price">$${product.price}</div>
+                    <div class="product-category">${categories.find(c => c.id === product.category)?.name}</div>
+                    <p>${product.desc}</p>
+                    <div style="color: #666; font-size: 0.9rem;">👁️ ${product.views || 0} views • 📅 Listed ${new Date(product.date).toLocaleDateString()}</div>
+                    <button onclick="deleteProduct(${product.id})" style="padding: 8px; background: #e74c3c; color: white; border: none; border-radius: 5px; margin-top: 10px;">
+                        Delete Item
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                products = products.filter(p => p.id !== id);
+                localStorage.setItem('hapa_products', JSON.stringify(products));
+                
+                // Update user's product count
+                if (currentUser) {
+                    currentUser.products = products.filter(p => p.sellerId === currentUser.id).length;
+                    const userIndex = users.findIndex(u => u.id === currentUser.id);
+                    if (userIndex !== -1) {
+                        users[userIndex] = currentUser;
+                        localStorage.setItem('hapa_users', JSON.stringify(users));
+                        localStorage.setItem('hapa_current_user', JSON.stringify(currentUser));
+                    }
+                }
+                
+                loadUserProducts();
+                updateUserDisplay();
+                alert('Item deleted successfully!');
+            }
+        }
+
+        // Chat Functions
+        function loadMessages() {
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = messages.map(msg => `
+                <div class="message ${msg.type}">
+                    ${msg.text}
+                </div>
+            `).join('');
+            
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            
+            if (!text) return;
+            
+            // Add user message
+            messages.push({
+                type: 'sent',
+                text: text,
+                time: new Date().toISOString()
+            });
+            
+            localStorage.setItem('hapa_messages', JSON.stringify(messages));
+            input.value = '';
+            loadMessages();
+            
+            // Auto-reply after 1 second
+            setTimeout(() => {
+                const replies = [
+                    "Thanks for your message! Our HAPA support team will help you shortly.",
+                    "We appreciate you reaching out to HAPA Marketplace!",
+                    "I understand your concern. Let me connect you with the right department.",
+                    "HAPA support is here to help! Can you provide more details?",
+                    "Thank you for choosing HAPA Marketplace. We're looking into your query."
+                ];
+                
+                messages.push({
+                    type: 'received',
+                    text: replies[Math.floor(Math.random() * replies.length)],
+                    time: new Date().toISOString()
+                });
+                
+                localStorage.setItem('hapa_messages', JSON.stringify(messages));
+                loadMessages();
+            }, 1000);
+        }
+
+        // Support Functions
+        function submitSupport(event) {
+            event.preventDefault();
+            
+            const ticket = {
+                id: tickets.length + 1,
+                name: document.getElementById('supportName').value,
+                email: document.getElementById('supportEmail').value,
+                category: document.getElementById('supportCategory').value,
+                subject: document.getElementById('supportSubject').value,
+                message: document.getElementById('supportMessage').value,
+                status: 'open',
+                date: new Date().toISOString()
+            };
+            
+            tickets.push(ticket);
+            localStorage.setItem('hapa_tickets', JSON.stringify(tickets));
+            
+            // Reset form
+            event.target.reset();
+            
+            alert('✅ HAPA Support ticket submitted! We will respond within 24 hours.');
+        }
+
+        // Admin Functions
+        function loginAdmin() {
+            const password = document.getElementById('admin-password').value;
+            if (password === adminSettings.adminPassword) {
+                isAdmin = true;
+                document.getElementById('admin-content').classList.remove('hidden');
+                loadAdminData();
+            } else {
+                alert('❌ Incorrect admin password!');
+            }
+        }
+
+        function loadAdminData() {
+            // Load support settings
+            document.getElementById('admin-support-phone').value = adminSettings.supportPhone;
+            document.getElementById('admin-support-email').value = adminSettings.supportEmail;
+            
+            // Load users table
+            const usersTable = document.getElementById('users-table');
+            usersTable.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>hapa.com/shop/${user.shopname}</td>
+                    <td>${products.filter(p => p.sellerId === user.id).length}</td>
+                    <td><span class="status-active">Active</span></td>
+                    <td>
+                        <button class="ban-btn" onclick="banUserByEmail('${user.email}')">Ban</button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // Load banned users
+            const bannedTable = document.getElementById('banned-users-table');
+            bannedTable.innerHTML = bannedUsers.map(user => `
+                <tr>
+                    <td>${user.email}</td>
+                    <td>${user.reason}</td>
+                    <td>${new Date(user.date).toLocaleDateString()}</td>
+                    <td>
+                        <button class="unban-btn" onclick="unbanUser('${user.email}')">Unban</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateSupportSettings(event) {
+            event.preventDefault();
+            
+            adminSettings.supportPhone = document.getElementById('admin-support-phone').value;
+            adminSettings.supportEmail = document.getElementById('admin-support-email').value;
+            
+            localStorage.setItem('hapa_admin', JSON.stringify(adminSettings));
+            
+            // Update display
+            document.getElementById('support-phone').textContent = adminSettings.supportPhone;
+            document.getElementById('support-email').textContent = adminSettings.supportEmail;
+            
+            alert('✅ Support settings updated!');
+        }
+
+        function banUser(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('ban-email').value;
+            const reason = document.getElementById('ban-reason').value;
+            
+            if (bannedUsers.find(u => u.email === email)) {
+                alert('User is already banned!');
+                return;
+            }
+            
+            bannedUsers.push({
+                email: email,
+                reason: reason,
+                date: new Date().toISOString()
+            });
+            
+            localStorage.setItem('hapa_banned', JSON.stringify(bannedUsers));
+            
+            // Remove user's products
+            products = products.filter(p => {
+                const user = users.find(u => u.email === email);
+                return !user || p.sellerId !== user.id;
+            });
+            localStorage.setItem('hapa_products', JSON.stringify(products));
+            
+            event.target.reset();
+            loadAdminData();
+            loadProducts();
+            
+            alert(`✅ User ${email} has been banned!`);
+        }
+
+        function banUserByEmail(email) {
+            if (confirm(`Ban user ${email}? This will remove all their products.`)) {
+                document.getElementById('ban-email').value = email;
+                document.getElementById('ban-reason').value = 'other';
+                banUser({ preventDefault: () => {} });
+            }
+        }
+
+        function unbanUser(email) {
+            bannedUsers = bannedUsers.filter(u => u.email !== email);
+            localStorage.setItem('hapa_banned', JSON.stringify(bannedUsers));
+            loadAdminData();
+            alert(`✅ User ${email} has been unbanned!`);
+        }
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            initData();
+            
+            // Show alcohol warning when category is selected
+            document.getElementById('itemCategory').addEventListener('change', function() {
+                const alcoholWarning = document.getElementById('alcohol-warning');
+                if (this.value === 'alcohol') {
+                    alcoholWarning.classList.remove('hidden');
+                } else {
+                    alcoholWarning.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
